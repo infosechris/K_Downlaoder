@@ -3,7 +3,6 @@ from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import WebDriverWait
 import time, pandas
 
 #This example requires Selenium WebDriver 3.13 or newer
@@ -59,12 +58,12 @@ elif date.today().weekday() == 6:
 #Clean out empty fields from raw file
 media = [x for x in raw if str(x) != 'nan']
 
-#For and While loop counter
+#For While loop counter and failed counter
 fcount = 0
 wcount = 0
 failed = 0
 
-#Go through list and download
+#Go through list, search, and queue it up
 search = driver.find_element_by_xpath("/html/body/table[1]/tbody/tr[1]/td/table/tbody/tr/td[2]/form/table/tbody/tr/td[2]/input")
 for item in media:
     fcount += 1
