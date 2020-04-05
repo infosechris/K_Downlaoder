@@ -3,6 +3,7 @@ from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from termcolor import colored
 import time, pandas
 
 #This example requires Selenium WebDriver 3.13 or newer
@@ -96,7 +97,7 @@ for item in media:
         print("Completed!\n")
     except:
         failed += 1
-        print ("Failed Queing: " + str(item) + " !\n")
+        print (colored("Failed Queing: ", "red") + colored(str(item), "red") + " !\n")
 
     #Switch back to Main Frame and clear search bar
     time.sleep(1)
