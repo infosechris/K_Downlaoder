@@ -1,23 +1,31 @@
+# Coded by Chris Min <infosechris@gmail.com>
+
+import time, pandas
+from termcolor import colored
 from datetime import date
-from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from termcolor import colored
-import time, pandas
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+#Path for chrome driver and csv file
+c_path = executable_path='INSERT CHROMEDRIVER PATH'
+csv_path= 'INSERT CSV IMPORT PATH'
 
 #This example requires Selenium WebDriver 3.13 or newer
-driver = webdriver.Chrome()
+driver = webdriver.Chrome(c_path)
+wait = WebDriverWait(driver, 10)
 
 #Go to URL
-url = "INSERT URL HERE"
-driver.get(url)
+driver.get("INSERT URL")
 
 #Select Main Frame
 frame = driver.find_element_by_xpath("//frame[@name='mainFrame']")
 driver.switch_to.frame(frame)
 
 #Login
+time.sleep(1)
 username = driver.find_element_by_xpath("//*[@id='sns_login_c']/li[1]/input[1]")
 username.send_keys("INSERT ID")
 password = driver.find_element_by_xpath("//*[@id='sns_login_c']/li[1]/input[2]")
@@ -25,13 +33,14 @@ password.send_keys("INSERT PW")
 driver.find_element_by_xpath("//*[@id='sns_login_c']/li[2]/a/img").click()
 
 #Select Main Frame again
-time.sleep(2)
+time.sleep(1)
+wait.until(EC.visibility_of_element_located((By.XPATH, "//frame[@name='mainFrame']")))
 frame = driver.find_element_by_xpath("//frame[@name='mainFrame']")
 driver.switch_to.frame(frame)
 
 #Read CSV file
 colnames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-data = pandas.read_csv('media_data.csv', names=colnames, encoding='utf-8')
+data = pandas.read_csv(csv_path, names=colnames, encoding='utf-8')
 mon = data.Monday.tolist()
 tue = data.Tuesday.tolist()
 wed = data.Wednesday.tolist()
@@ -59,12 +68,11 @@ elif date.today().weekday() == 6:
 #Clean out empty fields from raw file
 media = [x for x in raw if str(x) != 'nan']
 
-#For While loop counter and failed counter
+#For loop counter and try/except failed counter
 fcount = 0
-wcount = 0
 failed = 0
 
-#Go through list, search, and queue it up
+#Go through list and download
 search = driver.find_element_by_xpath("/html/body/table[1]/tbody/tr[1]/td/table/tbody/tr/td[2]/form/table/tbody/tr/td[2]/input")
 for item in media:
     fcount += 1
@@ -72,32 +80,24 @@ for item in media:
     print("Searching and queueing " + str(item) + "...")
     
     #Type the item in the search bar and search
+    time.sleep(1)
     search.send_keys(item)
     driver.find_element_by_css_selector("img[src='/template/club/skin/basic/images/search_btn.gif']").click()
-    time.sleep(1)    
     
     #Switching to inner iFrame
+    time.sleep(1)
+    wait.until(EC.visibility_of_element_located((By.XPATH, "//iframe[@name='club_body']")))
     driver.switch_to.frame(driver.find_element_by_xpath("//iframe[@name='club_body']"))
 
-    #If element is not displayed, keep clicking the search button
-    elem = driver.find_element_by_partial_link_text(item)
-    while not (elem.is_displayed() == True):
-        driver.switch_to.default_content()
-        driver.switch_to.frame(driver.find_element_by_xpath("//frame[@name='mainFrame']"))
-        driver.find_element_by_css_selector("img[src='/template/club/skin/basic/images/search_btn.gif']").click()
-        driver.switch_to.frame(driver.find_element_by_xpath("//iframe[@name='club_body']"))
-        wcount += 1
-        print ("I'm in the while loop!: " + str(wcount))
-    
     #Click Download, if fails move on
     try:
-        elem.click()
         time.sleep(1)
-        driver.find_element_by_css_selector("img[src='/images/board/btn_newDown.gif']").click()
+        wait.until(EC.element_to_be_clickable((By.PARTIAL_LINK_TEXT, item))).click()
+        wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "img[src='/images/board/btn_newDown.gif']"))).click()
         print("Completed!\n")
     except:
         failed += 1
-        print (colored("Failed Queing: ", "red") + colored(str(item), "red") + " !\n")
+        print (colored("Failed Queing: ", "red") + colored(str(item), "red") + "\n")
 
     #Switch back to Main Frame and clear search bar
     time.sleep(1)
@@ -106,6 +106,7 @@ for item in media:
     search.clear()
 
 #Switch back to Homepage when script is done
+time.sleep(1)
 driver.switch_to.default_content()
-driver.get(url)
+driver.get("INSERT URL")
 print ("Total Downloaded: " + str(fcount-failed))
