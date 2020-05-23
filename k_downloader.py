@@ -1,5 +1,5 @@
 # Coded by Chris Min <infosechris@gmail.com>
-# Note: time.sleep methods are used throughout the code to accomdate chrome procses latency. This will avoid handling errors.
+# Note: time.sleep() method is used throughout the code to accomdate chrome process latency. It helps avoiding handling errors.
 
 import time, pandas
 from termcolor import colored
