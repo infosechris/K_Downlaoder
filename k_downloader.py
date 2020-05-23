@@ -1,4 +1,5 @@
 # Coded by Chris Min <infosechris@gmail.com>
+# Note: time.sleep methods are used throughout the code to accomdate chrome procses latency. This will avoid handling errors.
 
 import time, pandas
 from termcolor import colored
@@ -9,16 +10,19 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-#Path for chrome driver and csv file
+#Assign variables
 c_path = executable_path='INSERT CHROMEDRIVER PATH'
 csv_path= 'INSERT CSV IMPORT PATH'
+url = 'INSERT URL'
+u_id = 'DO NOT INSERT ID IN CODE'
+u_pw = 'DO NOT INSERT PW IN CODE'
 
 #This example requires Selenium WebDriver 3.13 or newer
 driver = webdriver.Chrome(c_path)
 wait = WebDriverWait(driver, 10)
 
 #Go to URL
-driver.get("INSERT URL")
+driver.get(url)
 
 #Select Main Frame
 frame = driver.find_element_by_xpath("//frame[@name='mainFrame']")
@@ -27,9 +31,9 @@ driver.switch_to.frame(frame)
 #Login
 time.sleep(1)
 username = driver.find_element_by_xpath("//*[@id='sns_login_c']/li[1]/input[1]")
-username.send_keys("INSERT ID")
+username.send_keys(u_id)
 password = driver.find_element_by_xpath("//*[@id='sns_login_c']/li[1]/input[2]")
-password.send_keys("INSERT PW")
+password.send_keys(u_pw)
 driver.find_element_by_xpath("//*[@id='sns_login_c']/li[2]/a/img").click()
 
 #Select Main Frame again
@@ -108,5 +112,5 @@ for item in media:
 #Switch back to Homepage when script is done
 time.sleep(1)
 driver.switch_to.default_content()
-driver.get("INSERT URL")
+driver.get(url)
 print ("Total Downloaded: " + str(fcount-failed))
