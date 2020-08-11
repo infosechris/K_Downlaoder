@@ -7,7 +7,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.chrome.options import Options
 
 root = tkinter.Tk()
 root.withdraw()
@@ -18,10 +17,6 @@ if result:
 	url = 'INSERT URL'
 	u_id = 'DO NOT INSERT ID IN CODE'
 	u_pw = 'DO NOT INSERT PW IN CODE'
-
-    options = webdriver.ChromeOptions()
-    options.add_argument("--log-level=3")
-    driver = webdriver.Chrome(options=options)
 
     #Go to URL
     driver.get(url)
